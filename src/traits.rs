@@ -52,3 +52,17 @@ pub trait Statement: Clone + Copy + fmt::Display {
         false
     }
 }
+
+impl<'a> fmt::Display for LogicError<'a> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            LogicError::CounterExample(val) => {
+                write!(f, "CounterExample: [ ")?;
+                for variable in val.iter() {
+                    write!(f, "{} = {}, ", variable.0, variable.1)?;
+                }
+                write!(f, " ]")
+            }
+        }
+    }
+}

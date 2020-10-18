@@ -9,6 +9,7 @@ fn main() {
             let contraposition = b.not().implies(a.not());
             let statement = implication.equates(contraposition);
             compile_time_assert!(statement);
+            println!("The substatement: {} is true", statement);
         }
     }
     println!("QED");

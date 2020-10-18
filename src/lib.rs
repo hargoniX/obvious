@@ -1,3 +1,4 @@
+pub mod bruteforce;
 pub mod conclusion;
 pub mod logic;
 pub mod prelude;
