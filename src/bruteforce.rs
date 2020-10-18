@@ -1,5 +1,5 @@
-use crate::traits::Statement;
 use crate::logic::LogicError;
+use crate::traits::Statement;
 
 use core::fmt;
 
@@ -11,11 +11,20 @@ impl BruteforceSolver {
         F: Fn(&[BruteforceVariable<'a>]) -> T,
         T: Statement,
     {
-        let mut variables: Vec<BruteforceVariable<'a>> = names.iter().map(|name| BruteforceVariable::new(name)).collect();
+        // TODO: Once we get const generics we don't need vectors anymore for this.
+        let mut variables: Vec<BruteforceVariable<'a>> = names
+            .iter()
+            .map(|name| BruteforceVariable::new(name))
+            .collect();
         let mut statement = make_statement(&variables);
 
         if !statement.evaluate() {
-            return Err(LogicError::CounterExample(variables.iter().map(|variable| (variable.name, variable.inner)).collect()));
+            return Err(LogicError::CounterExample(
+                variables
+                    .iter()
+                    .map(|variable| (variable.name, variable.inner))
+                    .collect(),
+            ));
         }
 
         for counter in 1..2usize.pow((variables.len()) as u32) {
@@ -27,7 +36,12 @@ impl BruteforceSolver {
             statement = make_statement(&variables);
 
             if !statement.evaluate() {
-                return Err(LogicError::CounterExample(variables.iter().map(|variable| (variable.name, variable.inner)).collect()));
+                return Err(LogicError::CounterExample(
+                    variables
+                        .iter()
+                        .map(|variable| (variable.name, variable.inner))
+                        .collect(),
+                ));
             }
         }
 
@@ -43,10 +57,7 @@ pub struct BruteforceVariable<'a> {
 
 impl<'a> BruteforceVariable<'a> {
     fn new(name: &'a str) -> Self {
-        Self {
-            inner: false,
-            name
-        }
+        Self { inner: false, name }
     }
 }
 
@@ -68,13 +79,3 @@ impl<'a> Statement for BruteforceVariable<'a> {
         self.inner
     }
 }
-
-//let solver = BruteforceSolver::new();
-//solver.solve(&["a", "b", "c"], |vars| {
-//    a = vars[0];
-//    b = vars[1];
-//    let implication = a.implies(b);
-//    let contraposition = b.not().implies(a.not());
-//    let statement = implication.equates(contraposition);
-//    statement
-//});

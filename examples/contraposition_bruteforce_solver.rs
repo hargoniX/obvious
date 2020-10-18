@@ -1,5 +1,5 @@
-use obvious::prelude::*;
 use obvious::bruteforce::BruteforceSolver;
+use obvious::prelude::*;
 
 fn main() {
     println!("Proof by bruteforce that contraposition is equivalent to implication.");
@@ -11,7 +11,8 @@ fn main() {
         let statement = implication.equates(contraposition);
 
         statement
-    }).unwrap();
+    })
+    .unwrap();
     println!("The statement: {} is true", statement);
     println!("QED");
 }

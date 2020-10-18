@@ -96,5 +96,5 @@ impl<T: Statement> fmt::Display for Not<T> {
 #[derive(Debug, Clone)]
 #[non_exhaustive]
 pub enum LogicError<'a> {
-    CounterExample(Vec<(&'a str, bool)>)
+    CounterExample(Vec<(&'a str, bool)>),
 }
