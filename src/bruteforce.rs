@@ -51,12 +51,12 @@ impl BruteforceSolver {
 
 #[derive(Copy, Clone)]
 pub struct BruteforceVariable<'a> {
-    inner: bool,
-    name: &'a str,
+    pub(crate) inner: bool,
+    pub(crate) name: &'a str,
 }
 
 impl<'a> BruteforceVariable<'a> {
-    fn new(name: &'a str) -> Self {
+    pub(crate) fn new(name: &'a str) -> Self {
         Self { inner: false, name }
     }
 }
