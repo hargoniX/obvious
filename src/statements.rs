@@ -2,8 +2,8 @@ use crate::errors::ObviousError;
 
 use core::fmt;
 
-use crate::logic::{And, Or, Not};
-use crate::conclusion::{Implication, Equivalence};
+use crate::conclusion::{Equivalence, Implication};
+use crate::logic::{And, Not, Or};
 use crate::variable::Variable;
 
 use std::collections::HashMap;
@@ -16,7 +16,7 @@ pub enum Statements {
     Implication(Implication),
     Equivalence(Equivalence),
     Boolean(bool),
-    Variable(Variable)
+    Variable(Variable),
 }
 
 impl fmt::Display for Statements {
@@ -28,21 +28,19 @@ impl fmt::Display for Statements {
             Self::Implication(i) => write!(f, "{}", i),
             Self::Equivalence(i) => write!(f, "{}", i),
             Self::Boolean(i) => write!(f, "{}", i),
-            Self::Variable(i) => write!(f, "{}", i)
+            Self::Variable(i) => write!(f, "{}", i),
         }
     }
 }
 
 impl Statements {
     #[inline(always)]
-    pub fn or(&self, rhs: &Statements) -> Statements
-    {
+    pub fn or(&self, rhs: &Statements) -> Statements {
         Self::Or(Or::new(self.clone(), rhs.clone()))
     }
 
     #[inline(always)]
-    pub fn and(&self, rhs: &Statements) -> Statements
-    {
+    pub fn and(&self, rhs: &Statements) -> Statements {
         Self::And(And::new(self.clone(), rhs.clone()))
     }
 
@@ -52,14 +50,12 @@ impl Statements {
     }
 
     #[inline(always)]
-    pub fn implies(&self, rhs: & Statements) -> Statements
-    {
+    pub fn implies(&self, rhs: &Statements) -> Statements {
         Self::Implication(Implication::new(self.clone(), rhs.clone()))
     }
 
     #[inline(always)]
-    pub fn equates(&self, rhs: & Statements) -> Statements
-    {
+    pub fn equates(&self, rhs: &Statements) -> Statements {
         Self::Equivalence(Equivalence::new(self.clone(), rhs.clone()))
     }
 
@@ -87,7 +83,10 @@ impl Evaluatable for Statements {
         }
     }
 
-    fn evaluate_with_variables(&self, variables: &HashMap<String, bool>) -> Result<bool, ObviousError> {
+    fn evaluate_with_variables(
+        &self,
+        variables: &HashMap<String, bool>,
+    ) -> Result<bool, ObviousError> {
         match self {
             Self::And(i) => i.evaluate_with_variables(variables),
             Self::Or(i) => i.evaluate_with_variables(variables),
@@ -102,5 +101,8 @@ impl Evaluatable for Statements {
 
 pub trait Evaluatable: Clone + fmt::Display {
     fn evaluate(&self) -> Result<bool, ObviousError>;
-    fn evaluate_with_variables(&self, variables: &HashMap<String, bool>) -> Result<bool, ObviousError>;
+    fn evaluate_with_variables(
+        &self,
+        variables: &HashMap<String, bool>,
+    ) -> Result<bool, ObviousError>;
 }

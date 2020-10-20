@@ -1,14 +1,17 @@
+use crate::errors::ObviousError;
 use crate::statements::{Evaluatable, Statements};
 use crate::variable::Variable;
-use crate::errors::ObviousError;
 
-use std::collections::HashMap;
 use core::fmt;
+use std::collections::HashMap;
 
 pub struct BruteforceTruthTableBuilder {}
 
 impl BruteforceTruthTableBuilder {
-    pub fn build<'a, T, F>(names: &[&'a str], make_statement: F) -> Result<TruthTable<T>, ObviousError>
+    pub fn build<'a, T, F>(
+        names: &[&'a str],
+        make_statement: F,
+    ) -> Result<TruthTable<T>, ObviousError>
     where
         F: Fn(Vec<Statements>) -> T,
         T: Evaluatable,
@@ -20,35 +23,54 @@ impl BruteforceTruthTableBuilder {
             .map(|name| Variable::new(String::from(*name)))
             .collect();
 
-        let statement = make_statement(variables.iter().map(|variable| Statements::Variable(variable.clone())).collect());
+        let statement = make_statement(
+            variables
+                .iter()
+                .map(|variable| Statements::Variable(variable.clone()))
+                .collect(),
+        );
 
-        let mut variable_values: HashMap<String, bool> = variables.iter().map(|variable| (variable.name.clone(), false)).collect();
+        let mut variable_values: HashMap<String, bool> = variables
+            .iter()
+            .map(|variable| (variable.name.clone(), false))
+            .collect();
 
-        table.insert(variable_values.values().map(|val| *val).collect(), statement.evaluate_with_variables(&variable_values)?);
+        table.insert(
+            variable_values.values().map(|val| *val).collect(),
+            statement.evaluate_with_variables(&variable_values)?,
+        );
 
         for counter in 1..2usize.pow((variables.len()) as u32) {
             for index in 0..variables.len() {
                 if counter % 2usize.pow(index as u32) == 0 {
-                    variable_values.insert(variables[index].name.clone(), !variable_values[&variables[index].name]);
+                    variable_values.insert(
+                        variables[index].name.clone(),
+                        !variable_values[&variables[index].name],
+                    );
                 }
             }
-            table.insert(variable_values.values().map(|val| *val).collect(), statement.evaluate_with_variables(&variable_values)?);
+            table.insert(
+                variable_values.values().map(|val| *val).collect(),
+                statement.evaluate_with_variables(&variable_values)?,
+            );
         }
 
         Ok(TruthTable {
             statement,
-            variables: variables.iter().map(|variable| variable.name.clone()).collect(),
-            table
+            variables: variables
+                .iter()
+                .map(|variable| variable.name.clone())
+                .collect(),
+            table,
         })
     }
-
 }
 
 // TODO: This type can be implemented much better with const generics as well
 pub struct TruthTable<S: Evaluatable> {
     pub statement: S,
     pub variables: Vec<String>,
-    pub table: HashMap<Vec<bool>, bool>
+    pub table: HashMap<Vec<bool>, bool>,
 }
 
 impl<S: Evaluatable> fmt::Display for TruthTable<S> {
@@ -57,7 +79,11 @@ impl<S: Evaluatable> fmt::Display for TruthTable<S> {
         for _ in 0..self.variables.len() + 1 {
             table_format.push_str("c|");
         }
-        write!(f, "\\begin{{tabular}}{{ {} }}\n    \\hline\n    ", table_format)?;
+        write!(
+            f,
+            "\\begin{{tabular}}{{ {} }}\n    \\hline\n    ",
+            table_format
+        )?;
 
         for variable in self.variables.iter() {
             write!(f, "{} & ", variable)?;

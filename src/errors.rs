@@ -10,7 +10,7 @@ pub enum ObviousError {
     /// Thrown if a logical statement that was tried to evaluated is not constant, i.e.
     /// it contains a variable that has not been given a value for this evaluation. The associated
     /// &str contains the names of said variable.
-    NotConstant(String)
+    NotConstant(String),
 }
 
 impl fmt::Display for ObviousError {
@@ -23,7 +23,9 @@ impl fmt::Display for ObviousError {
                 }
                 write!(f, " ]")
             }
-            ObviousError::NotConstant(variable) => write!(f, "The variable '{}' has not been given a value", variable)
+            ObviousError::NotConstant(variable) => {
+                write!(f, "The variable '{}' has not been given a value", variable)
+            }
         }
     }
 }

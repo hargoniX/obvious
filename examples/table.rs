@@ -11,6 +11,10 @@ fn main() {
         let statement = second.equates(&third);
 
         statement
-    }).unwrap();
-    println!("The truth table for the statement {} is:\n{}", table.statement, table);
+    })
+    .unwrap();
+    println!(
+        "The truth table for the statement {} is:\n{}",
+        table.statement, table
+    );
 }

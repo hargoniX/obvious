@@ -1,5 +1,5 @@
-use crate::statements::{Evaluatable, Statements};
 use crate::errors::ObviousError;
+use crate::statements::{Evaluatable, Statements};
 use core::fmt;
 
 use std::collections::HashMap;
@@ -13,21 +13,30 @@ pub struct Implication {
 impl Implication {
     #[inline(always)]
     pub fn new(left: Statements, right: Statements) -> Self {
-        Self { left: Box::new(left), right: Box::new(right) }
+        Self {
+            left: Box::new(left),
+            right: Box::new(right),
+        }
     }
 }
 
 impl Evaluatable for Implication {
     #[inline(always)]
-    fn evaluate(&self) -> Result<bool, ObviousError>  {
+    fn evaluate(&self) -> Result<bool, ObviousError> {
         // A \Rightarrow B is equivalent to \bar{A} \lor B
         self.left.not().or(self.right.as_ref()).evaluate()
     }
 
     #[inline(always)]
-    fn evaluate_with_variables(&self, variables: &HashMap<String, bool>) -> Result<bool, ObviousError> {
+    fn evaluate_with_variables(
+        &self,
+        variables: &HashMap<String, bool>,
+    ) -> Result<bool, ObviousError> {
         // A \Rightarrow B is equivalent to \bar{A} \lor B
-        self.left.not().or(self.right.as_ref()).evaluate_with_variables(variables)
+        self.left
+            .not()
+            .or(self.right.as_ref())
+            .evaluate_with_variables(variables)
     }
 }
 
@@ -36,4 +45,3 @@ impl fmt::Display for Implication {
         write!(f, "({} \\Rightarrow {})", self.left, self.right)
     }
 }
-

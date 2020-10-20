@@ -1,5 +1,5 @@
-mod implication;
 mod equation;
+mod implication;
 
-pub use implication::Implication;
 pub use equation::Equivalence;
+pub use implication::Implication;

@@ -1,5 +1,5 @@
-use crate::statements::{Evaluatable, Statements};
 use crate::errors::ObviousError;
+use crate::statements::{Evaluatable, Statements};
 use core::fmt;
 
 use std::collections::HashMap;
@@ -12,7 +12,9 @@ pub struct Not {
 impl Not {
     #[inline(always)]
     pub fn new(inner: Statements) -> Self {
-        Self { inner: Box::new(inner) }
+        Self {
+            inner: Box::new(inner),
+        }
     }
 }
 
@@ -23,7 +25,10 @@ impl Evaluatable for Not {
     }
 
     #[inline(always)]
-    fn evaluate_with_variables(&self, variables: &HashMap<String, bool>) -> Result<bool, ObviousError> {
+    fn evaluate_with_variables(
+        &self,
+        variables: &HashMap<String, bool>,
+    ) -> Result<bool, ObviousError> {
         Ok(!self.inner.evaluate_with_variables(variables)?)
     }
 }
@@ -33,4 +38,3 @@ impl fmt::Display for Not {
         write!(f, "\\overline{{{}}}", self.inner)
     }
 }
-

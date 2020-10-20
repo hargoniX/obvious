@@ -1,5 +1,5 @@
-use crate::statements::{Evaluatable, Statements};
 use crate::errors::ObviousError;
+use crate::statements::{Evaluatable, Statements};
 use core::fmt;
 
 use std::collections::HashMap;
@@ -13,7 +13,10 @@ pub struct Equivalence {
 impl Equivalence {
     #[inline(always)]
     pub fn new(left: Statements, right: Statements) -> Self {
-        Self { left: Box::new(left), right: Box::new(right) }
+        Self {
+            left: Box::new(left),
+            right: Box::new(right),
+        }
     }
 }
 
@@ -28,7 +31,10 @@ impl Evaluatable for Equivalence {
     }
 
     #[inline(always)]
-    fn evaluate_with_variables(&self, variables: &HashMap<String, bool>) -> Result<bool, ObviousError> {
+    fn evaluate_with_variables(
+        &self,
+        variables: &HashMap<String, bool>,
+    ) -> Result<bool, ObviousError> {
         self.left
             .implies(self.right.as_ref())
             .and(&self.right.implies(self.left.as_ref()))

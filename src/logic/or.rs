@@ -1,5 +1,5 @@
-use crate::statements::{Evaluatable, Statements};
 use crate::errors::ObviousError;
+use crate::statements::{Evaluatable, Statements};
 use core::fmt;
 
 use std::collections::HashMap;
@@ -13,7 +13,10 @@ pub struct Or {
 impl Or {
     #[inline(always)]
     pub fn new(left: Statements, right: Statements) -> Self {
-        Self { left: Box::new(left), right: Box::new(right) }
+        Self {
+            left: Box::new(left),
+            right: Box::new(right),
+        }
     }
 }
 
@@ -24,8 +27,12 @@ impl Evaluatable for Or {
     }
 
     #[inline(always)]
-    fn evaluate_with_variables(&self, variables: &HashMap<String, bool>) -> Result<bool, ObviousError> {
-        Ok(self.left.evaluate_with_variables(variables)? || self.right.evaluate_with_variables(variables)?)
+    fn evaluate_with_variables(
+        &self,
+        variables: &HashMap<String, bool>,
+    ) -> Result<bool, ObviousError> {
+        Ok(self.left.evaluate_with_variables(variables)?
+            || self.right.evaluate_with_variables(variables)?)
     }
 }
 
@@ -34,4 +41,3 @@ impl fmt::Display for Or {
         write!(f, "({} \\lor {})", self.left, self.right)
     }
 }
-

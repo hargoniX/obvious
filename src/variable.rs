@@ -1,5 +1,5 @@
-use crate::statements::Evaluatable;
 use crate::errors::ObviousError;
+use crate::statements::Evaluatable;
 
 use core::fmt;
 use std::collections::HashMap;
@@ -11,9 +11,7 @@ pub struct Variable {
 
 impl Variable {
     pub fn new(name: String) -> Self {
-        Self {
-            name
-        }
+        Self { name }
     }
 }
 
@@ -30,10 +28,13 @@ impl Evaluatable for Variable {
     }
 
     #[inline(always)]
-    fn evaluate_with_variables(&self, variables: &HashMap<String, bool>) -> Result<bool, ObviousError> {
+    fn evaluate_with_variables(
+        &self,
+        variables: &HashMap<String, bool>,
+    ) -> Result<bool, ObviousError> {
         match variables.get(&self.name) {
             Some(value) => Ok(*value),
-            None => Err(ObviousError::NotConstant(self.name.clone()))
+            None => Err(ObviousError::NotConstant(self.name.clone())),
         }
     }
 }

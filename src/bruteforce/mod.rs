@@ -1,7 +1,7 @@
+mod parallel_table;
 mod solver;
 mod table;
-mod parallel_table;
 
+pub use parallel_table::ParallelBruteforceTruthTableBuilder;
 pub use solver::BruteforceSolver;
 pub use table::{BruteforceTruthTableBuilder, TruthTable};
-pub use parallel_table::ParallelBruteforceTruthTableBuilder;
