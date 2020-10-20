@@ -2,4 +2,4 @@ mod solver;
 mod table;
 
 pub use solver::BruteforceSolver;
-pub use table::BruteforceTruthTableBuilder;
+pub use table::{BruteforceTruthTableBuilder, TruthTable};
