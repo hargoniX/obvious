@@ -2,7 +2,7 @@ use crate::errors::ObviousError;
 use crate::statements::{Evaluatable, Statements};
 use crate::variable::Variable;
 
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 pub struct BruteforceSolver {}
 
@@ -24,7 +24,7 @@ impl BruteforceSolver {
                 .collect(),
         );
 
-        let mut variable_values: HashMap<String, bool> = variables
+        let mut variable_values: BTreeMap<String, bool> = variables
             .iter()
             .map(|variable| (variable.name.clone(), false))
             .collect();

@@ -1,12 +1,12 @@
 use core::fmt;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 #[derive(Debug, Clone)]
 #[non_exhaustive]
 pub enum ObviousError {
     /// Provides a counter example in form of a list of variables for which the statement
     /// which returned this error is not correct
-    CounterExample(HashMap<String, bool>),
+    CounterExample(BTreeMap<String, bool>),
     /// Thrown if a logical statement that was tried to evaluated is not constant, i.e.
     /// it contains a variable that has not been given a value for this evaluation. The associated
     /// &str contains the names of said variable.

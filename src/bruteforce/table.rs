@@ -1,9 +1,10 @@
 use crate::errors::ObviousError;
 use crate::statements::{Evaluatable, Statements};
 use crate::variable::Variable;
+use crate::bruteforce::usize_to_state;
 
 use core::fmt;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 pub struct BruteforceTruthTableBuilder {}
 
@@ -15,7 +16,7 @@ impl BruteforceTruthTableBuilder {
     where
         F: Fn(Vec<Statements>) -> Statements,
     {
-        let mut table: HashMap<Vec<bool>, bool> = HashMap::new();
+        let mut table: BTreeMap<Vec<bool>, bool> = BTreeMap::new();
         // TODO: Once we get const generics we don't need vectors anymore for this.
         let variables: Vec<Variable> = names
             .iter()
@@ -29,25 +30,19 @@ impl BruteforceTruthTableBuilder {
                 .collect(),
         );
 
-        let mut variable_values: HashMap<String, bool> = variables
+        let mut variable_values: BTreeMap<String, bool> = variables
             .iter()
             .map(|variable| (variable.name.clone(), false))
             .collect();
 
-        table.insert(
-            variable_values.values().copied().collect(),
-            statement.evaluate_with_variables(&variable_values)?,
-        );
+        let state_size = variables.len();
+        for counter in 0..2usize.pow((state_size) as u32) {
+            let state = usize_to_state(counter, state_size);
 
-        for counter in 1..2usize.pow((variables.len()) as u32) {
-            for index in 0..variables.len() {
-                if counter % 2usize.pow(index as u32) == 0 {
-                    variable_values.insert(
-                        variables[index].name.clone(),
-                        !variable_values[&variables[index].name],
-                    );
-                }
+            for (index, variable) in variables.iter().enumerate() {
+                variable_values.insert(variable.name.clone(), state[index]);
             }
+
             table.insert(
                 variable_values.values().copied().collect(),
                 statement.evaluate_with_variables(&variable_values)?,
@@ -69,7 +64,7 @@ impl BruteforceTruthTableBuilder {
 pub struct TruthTable {
     pub statement: Statements,
     pub variables: Vec<String>,
-    pub table: HashMap<Vec<bool>, bool>,
+    pub table: BTreeMap<Vec<bool>, bool>,
 }
 
 impl fmt::Display for TruthTable {

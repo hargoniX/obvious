@@ -8,3 +8,10 @@ edition = "2018"
 
 [dependencies]
 rayon = "1.4.1"
+
+[dev-dependencies]
+criterion = "0.3.3"
+
+[[bench]]
+name = "truth_table_benchmark"
+harness = false

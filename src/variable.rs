@@ -2,7 +2,7 @@ use crate::errors::ObviousError;
 use crate::statements::Evaluatable;
 
 use core::fmt;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 #[derive(Debug, Clone)]
 pub struct Variable {
@@ -30,7 +30,7 @@ impl Evaluatable for Variable {
     #[inline(always)]
     fn evaluate_with_variables(
         &self,
-        variables: &HashMap<String, bool>,
+        variables: &BTreeMap<String, bool>,
     ) -> Result<bool, ObviousError> {
         match variables.get(&self.name) {
             Some(value) => Ok(*value),

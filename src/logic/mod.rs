@@ -5,7 +5,7 @@ mod or;
 use crate::errors::ObviousError;
 use crate::statements::Evaluatable;
 
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 pub use and::And;
 pub use not::Not;
@@ -20,7 +20,7 @@ impl Evaluatable for bool {
     #[inline(always)]
     fn evaluate_with_variables(
         &self,
-        _variables: &HashMap<String, bool>,
+        _variables: &BTreeMap<String, bool>,
     ) -> Result<bool, ObviousError> {
         Ok(*self)
     }
@@ -35,7 +35,7 @@ impl Evaluatable for &bool {
     #[inline(always)]
     fn evaluate_with_variables(
         &self,
-        _variables: &HashMap<String, bool>,
+        _variables: &BTreeMap<String, bool>,
     ) -> Result<bool, ObviousError> {
         Ok(**self)
     }

@@ -6,7 +6,7 @@ use crate::conclusion::{Equivalence, Implication};
 use crate::logic::{And, Not, Or};
 use crate::variable::Variable;
 
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 #[derive(Clone, Debug)]
 pub enum Statements {
@@ -85,7 +85,7 @@ impl Evaluatable for Statements {
 
     fn evaluate_with_variables(
         &self,
-        variables: &HashMap<String, bool>,
+        variables: &BTreeMap<String, bool>,
     ) -> Result<bool, ObviousError> {
         match self {
             Self::And(i) => i.evaluate_with_variables(variables),
@@ -103,6 +103,6 @@ pub trait Evaluatable: Clone + fmt::Display {
     fn evaluate(&self) -> Result<bool, ObviousError>;
     fn evaluate_with_variables(
         &self,
-        variables: &HashMap<String, bool>,
+        variables: &BTreeMap<String, bool>,
     ) -> Result<bool, ObviousError>;
 }

@@ -2,9 +2,10 @@ use crate::bruteforce::TruthTable;
 use crate::errors::ObviousError;
 use crate::statements::{Evaluatable, Statements};
 use crate::variable::Variable;
+use crate::bruteforce::usize_to_state;
 
 use rayon::prelude::*;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 pub struct ParallelBruteforceTruthTableBuilder {}
 
@@ -16,7 +17,7 @@ impl ParallelBruteforceTruthTableBuilder {
     where
         F: Fn(Vec<Statements>) -> Statements,
     {
-        let mut table: HashMap<Vec<bool>, bool> = HashMap::new();
+        let mut table: BTreeMap<Vec<bool>, bool> = BTreeMap::new();
         // TODO: Once we get const generics we don't need vectors anymore for this.
         let variables: Vec<Variable> = names
             .iter()
@@ -30,31 +31,18 @@ impl ParallelBruteforceTruthTableBuilder {
                 .collect(),
         );
 
-        let variable_values: HashMap<String, bool> = variables
-            .iter()
-            .map(|variable| (variable.name.clone(), false))
-            .collect();
-
-        table.insert(
-            variable_values.values().copied().collect(),
-            statement.evaluate_with_variables(&variable_values)?,
-        );
-
-        let results: Result<HashMap<Vec<bool>, bool>, ObviousError> = (1..2usize
-            .pow((variables.len()) as u32))
+        let state_size = variables.len();
+        let results: Result<BTreeMap<Vec<bool>, bool>, ObviousError> = (0..2usize
+            .pow(variables.len() as u32))
             .into_par_iter()
             .map(|counter| {
-                let mut values = variable_values.clone();
-                for counter in 1..=counter {
-                    for index in 0..variables.len() {
-                        if counter % 2usize.pow(index as u32) == 0 {
-                            values.insert(
-                                variables[index].name.clone(),
-                                !values[&variables[index].name],
-                            );
-                        }
-                    }
+                let mut values = BTreeMap::new();
+                let state = usize_to_state(counter, state_size);
+
+                for (index, variable) in variables.iter().enumerate() {
+                    values.insert(variable.name.clone(), state[index]);
                 }
+
                 Ok((
                     values.values().copied().collect(),
                     statement.evaluate_with_variables(&values)?,

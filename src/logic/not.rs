@@ -2,7 +2,7 @@ use crate::errors::ObviousError;
 use crate::statements::{Evaluatable, Statements};
 use core::fmt;
 
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 #[derive(Debug, Clone)]
 pub struct Not {
@@ -27,7 +27,7 @@ impl Evaluatable for Not {
     #[inline(always)]
     fn evaluate_with_variables(
         &self,
-        variables: &HashMap<String, bool>,
+        variables: &BTreeMap<String, bool>,
     ) -> Result<bool, ObviousError> {
         Ok(!self.inner.evaluate_with_variables(variables)?)
     }
