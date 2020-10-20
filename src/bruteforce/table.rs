@@ -8,13 +8,12 @@ use std::collections::HashMap;
 pub struct BruteforceTruthTableBuilder {}
 
 impl BruteforceTruthTableBuilder {
-    pub fn build<'a, T, F>(
+    pub fn build<'a, F>(
         names: &[&'a str],
         make_statement: F,
-    ) -> Result<TruthTable<T>, ObviousError>
+    ) -> Result<TruthTable, ObviousError>
     where
-        F: Fn(Vec<Statements>) -> T,
-        T: Evaluatable,
+        F: Fn(Vec<Statements>) -> Statements,
     {
         let mut table: HashMap<Vec<bool>, bool> = HashMap::new();
         // TODO: Once we get const generics we don't need vectors anymore for this.
@@ -67,13 +66,13 @@ impl BruteforceTruthTableBuilder {
 }
 
 // TODO: This type can be implemented much better with const generics as well
-pub struct TruthTable<S: Evaluatable> {
-    pub statement: S,
+pub struct TruthTable {
+    pub statement: Statements,
     pub variables: Vec<String>,
     pub table: HashMap<Vec<bool>, bool>,
 }
 
-impl<S: Evaluatable> fmt::Display for TruthTable<S> {
+impl fmt::Display for TruthTable {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut table_format = String::from("|");
         for _ in 0..self.variables.len() + 1 {

@@ -9,13 +9,12 @@ use std::collections::HashMap;
 pub struct ParallelBruteforceTruthTableBuilder {}
 
 impl ParallelBruteforceTruthTableBuilder {
-    pub fn build<'a, T, F>(
+    pub fn build<'a, F>(
         names: &[&'a str],
         make_statement: F,
-    ) -> Result<TruthTable<T>, ObviousError>
+    ) -> Result<TruthTable, ObviousError>
     where
-        F: Fn(Vec<Statements>) -> T,
-        T: Evaluatable + Sync,
+        F: Fn(Vec<Statements>) -> Statements,
     {
         let mut table: HashMap<Vec<bool>, bool> = HashMap::new();
         // TODO: Once we get const generics we don't need vectors anymore for this.
@@ -46,12 +45,14 @@ impl ParallelBruteforceTruthTableBuilder {
             .into_par_iter()
             .map(|counter| {
                 let mut values = variable_values.clone();
-                for index in 0..variables.len() {
-                    if counter % 2usize.pow(index as u32) == 0 {
-                        values.insert(
-                            variables[index].name.clone(),
-                            !values[&variables[index].name],
-                        );
+                for counter in 1..=counter {
+                    for index in 0..variables.len() {
+                        if counter % 2usize.pow(index as u32) == 0 {
+                            values.insert(
+                                variables[index].name.clone(),
+                                !values[&variables[index].name],
+                            );
+                        }
                     }
                 }
                 Ok((
