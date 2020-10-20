@@ -1,54 +1,57 @@
-use crate::traits::Statement;
-use crate::bruteforce::BruteforceVariable;
+use crate::statements::{Evaluatable, Statements};
+use crate::variable::Variable;
+use crate::errors::ObviousError;
 
 use std::collections::HashMap;
 use core::fmt;
 
-pub struct TruthTableBuilder {}
+pub struct BruteforceTruthTableBuilder {}
 
-impl TruthTableBuilder {
-    pub fn build<'a, T, F>(names: &[&'a str], make_statement: F) -> TruthTable<'a, T>
+impl BruteforceTruthTableBuilder {
+    pub fn build<'a, T, F>(names: &[&'a str], make_statement: F) -> Result<TruthTable<T>, ObviousError>
     where
-        F: Fn(&[BruteforceVariable<'a>]) -> T,
-        T: Statement,
+        F: Fn(Vec<Statements>) -> T,
+        T: Evaluatable,
     {
         let mut table: HashMap<Vec<bool>, bool> = HashMap::new();
         // TODO: Once we get const generics we don't need vectors anymore for this.
-        let mut variables: Vec<BruteforceVariable<'a>> = names
+        let variables: Vec<Variable> = names
             .iter()
-            .map(|name| BruteforceVariable::new(name))
+            .map(|name| Variable::new(String::from(*name)))
             .collect();
-        let mut statement = make_statement(&variables);
 
-        table.insert(variables.iter().map(|variable| variable.inner).collect(), statement.evaluate());
+        let statement = make_statement(variables.iter().map(|variable| Statements::Variable(variable.clone())).collect());
+
+        let mut variable_values: HashMap<String, bool> = variables.iter().map(|variable| (variable.name.clone(), false)).collect();
+
+        table.insert(variable_values.values().map(|val| *val).collect(), statement.evaluate_with_variables(&variable_values)?);
 
         for counter in 1..2usize.pow((variables.len()) as u32) {
             for index in 0..variables.len() {
                 if counter % 2usize.pow(index as u32) == 0 {
-                    variables[index].inner = !variables[index].inner;
+                    variable_values.insert(variables[index].name.clone(), !variable_values[&variables[index].name]);
                 }
             }
-            statement = make_statement(&variables);
-            table.insert(variables.iter().map(|variable| variable.inner).collect(), statement.evaluate());
+            table.insert(variable_values.values().map(|val| *val).collect(), statement.evaluate_with_variables(&variable_values)?);
         }
 
-        TruthTable {
+        Ok(TruthTable {
             statement,
-            variables: variables.iter().map(|variable| variable.name).collect(),
+            variables: variables.iter().map(|variable| variable.name.clone()).collect(),
             table
-        }
+        })
     }
 
 }
 
 // TODO: This type can be implemented much better with const generics as well
-pub struct TruthTable<'a, S: Statement> {
+pub struct TruthTable<S: Evaluatable> {
     pub statement: S,
-    pub variables: Vec<&'a str>,
+    pub variables: Vec<String>,
     pub table: HashMap<Vec<bool>, bool>
 }
 
-impl<'a, S: Statement> fmt::Display for TruthTable<'a, S> {
+impl<S: Evaluatable> fmt::Display for TruthTable<S> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut table_format = String::from("|");
         for _ in 0..self.variables.len() + 1 {
