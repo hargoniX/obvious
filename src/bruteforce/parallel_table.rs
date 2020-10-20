@@ -37,7 +37,7 @@ impl ParallelBruteforceTruthTableBuilder {
             .collect();
 
         table.insert(
-            variable_values.values().map(|val| *val).collect(),
+            variable_values.values().copied().collect(),
             statement.evaluate_with_variables(&variable_values)?,
         );
 
@@ -55,7 +55,7 @@ impl ParallelBruteforceTruthTableBuilder {
                     }
                 }
                 Ok((
-                    values.values().map(|val| *val).collect(),
+                    values.values().copied().collect(),
                     statement.evaluate_with_variables(&values)?,
                 ))
             })

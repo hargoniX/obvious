@@ -36,7 +36,7 @@ impl BruteforceTruthTableBuilder {
             .collect();
 
         table.insert(
-            variable_values.values().map(|val| *val).collect(),
+            variable_values.values().copied().collect(),
             statement.evaluate_with_variables(&variable_values)?,
         );
 
@@ -50,7 +50,7 @@ impl BruteforceTruthTableBuilder {
                 }
             }
             table.insert(
-                variable_values.values().map(|val| *val).collect(),
+                variable_values.values().copied().collect(),
                 statement.evaluate_with_variables(&variable_values)?,
             );
         }
@@ -89,8 +89,8 @@ impl<S: Evaluatable> fmt::Display for TruthTable<S> {
             write!(f, "{} & ", variable)?;
         }
 
-        write!(f, "{} \\\\\n", self.statement)?;
-        write!(f, "    \\hline\n")?;
+        writeln!(f, "{} \\\\", self.statement)?;
+        writeln!(f, "    \\hline")?;
 
         for (values, result) in self.table.iter() {
             write!(f, "    ")?;
@@ -98,8 +98,8 @@ impl<S: Evaluatable> fmt::Display for TruthTable<S> {
                 write!(f, "{} & ", value)?;
             }
 
-            write!(f, "{} \\\\\n", result)?;
-            write!(f, "    \\hline\n")?;
+            writeln!(f, "{} \\\\", result)?;
+            writeln!(f, "    \\hline")?;
         }
 
         write!(f, "\\end{{tabular}}")
