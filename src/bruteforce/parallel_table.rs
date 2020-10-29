@@ -17,7 +17,6 @@ impl ParallelBruteforceTruthTableBuilder {
     where
         F: Fn(Vec<Statements>) -> Statements,
     {
-        let mut table: BTreeMap<Vec<bool>, bool> = BTreeMap::new();
         // TODO: Once we get const generics we don't need vectors anymore for this.
         let variables: Vec<Variable> = names
             .iter()
@@ -32,7 +31,7 @@ impl ParallelBruteforceTruthTableBuilder {
         );
 
         let state_size = variables.len();
-        let results: Result<BTreeMap<Vec<bool>, bool>, ObviousError> = (0..2usize
+        let table: Result<BTreeMap<Vec<bool>, bool>, ObviousError> = (0..2usize
             .pow(variables.len() as u32))
             .into_par_iter()
             .map(|counter| {
@@ -50,7 +49,6 @@ impl ParallelBruteforceTruthTableBuilder {
             })
             .collect();
 
-        table.extend(results?);
 
         Ok(TruthTable {
             statement,
@@ -58,7 +56,7 @@ impl ParallelBruteforceTruthTableBuilder {
                 .iter()
                 .map(|variable| variable.name.clone())
                 .collect(),
-            table,
+            table: table?,
         })
     }
 }
